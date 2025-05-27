@@ -1,0 +1,6 @@
+.conda
+.git
+.vscode
+Dockerfile
+.dockerignore
+*/qdrant_*

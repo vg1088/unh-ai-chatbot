@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Chatbot</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        .chatbox {
+            width: 95%;
+            max-width: 1000px;
+            height: 600px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(43, 13, 142, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-title {
+            background-color: #112e8f;
+            color: #ffffff;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .chat-title img {
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        .chat-title h1,
+        .chat-title h2,
+        .chat-title h3 {
+            margin: 0;
+            line-height: 1.2;
+            font-weight: 300;
+            color: #ffffff;
+        }
+
+        .chat-title h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .chat-title h2 {
+            font-size: 1.1rem;
+        }
+
+        .chat-title h3 {
+            font-size: 0.9rem;
+        }
+
+        .refresh-button {
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            background-color: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 35px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .refresh-button:hover {
+            color: #bbbbbb;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-top: 1px solid #fffdfd;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat {
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 15px;
+            max-width: 75%;
+            font-size: 0.95em;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            display: inline-block;
+            position: relative;
+        }
+
+        .chat.incoming {
+            background-color: #dedee4;
+            color: #333333;
+            border: 1px solid #dcdcdc;
+        }
+
+        .chat.outgoing {
+            background-color: #d2d2d4;
+            color: #050506;
+            align-self: flex-end;
+        }
+
+        .typing-container {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            background-color: #ffffff;
+        }
+
+        .typing-textarea {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .typing-textarea textarea {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #dddddd;
+            border-radius: 20px;
+            padding: 8px 45px 8px 15px;
+            resize: none;
+            outline: none;
+            font-size: 0.95em;
+            color: #333333;
+            background-color: #f8f8f8;
+        }
+
+        .typing-textarea textarea::placeholder {
+            color: #aaaaaa;
+        }
+
+        .send-button {
+            position: absolute;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            font-size: 18px;
+            color: #333333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+        }
+
+        .send-button:hover {
+            color: #555555;
+        }
+
+        /* Typing Animation Styles */
+        .typing-animation {
+            display: none;
+            font-size: 1rem;
+            color: #777777;
+            padding-bottom: 10px;
+            font-family: Arial, sans-serif;
+            margin-left: 30px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            margin: 0 2px;
+            background-color: #777777;
+            border-radius: 50%;
+            animation: typingDot 1.2s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes typingDot {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #dedee4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .chatbox {
+                height: 90vh;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chatbox">
+        <div class="chat-title">
+            <button id="refresh-button" class="refresh-button" title="Refresh Chat History">&#x21bb;</button>
+            <img src="{{ url_for('static', filename='UNH.png') }}" alt="UNH Logo">
+            <h1>Internship Chatbot</h1>
+            <h2>UNH Manchester</h2>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+        <!-- Typing animation (now positioned dynamically) -->
+        <div class="typing-animation" id="typing-animation">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <div class="typing-container">
+            <div class="typing-textarea">
+                <textarea id="user-input" placeholder="Type a message..."></textarea>
+                <button id="send-button" class="send-button">&#9658;</button>
+            </div>
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loading-spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to send the user's message
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const messageText = input.value.trim();
+            if (messageText === '') return;
+
+            addMessage('outgoing', messageText);
+            input.value = '';  // Clear input field
+
+            // Show typing animation
+            showTypingAnimation();
+
+            // Simulate bot response after a slight delay
+            setTimeout(() => {
+                getBotResponse(messageText);
+            }, 500);
+        }
+
+        // Function to show typing animation
+        function showTypingAnimation() {
+            const typingAnimation = document.getElementById('typing-animation');
+            const chatContainer = document.getElementById('chat-container');
+            
+            // Add typing animation to the chat container
+            chatContainer.appendChild(typingAnimation);
+            typingAnimation.style.display = 'block';
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
+
+        // Function to clear chat history and reset the chat
+        function clearHistory() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.innerHTML = '';  // Clear the chat container
+            $.ajax({
+                url: '/llm_response',
+                type: 'PUT',
+                error: function (error) {
+                    console.log(error);  // Log any errors
+                }
+            });
+        }
+
+        // Event listeners for buttons and enter key
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+        document.getElementById('refresh-button').addEventListener('click', clearHistory);
+        document.getElementById('user-input').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Function to add a message to the chat window
+        function addMessage(type, message) {
+            const chatContainer = document.getElementById('chat-container');
+            const chatDiv = document.createElement('div');
+            chatDiv.className = `chat ${type}`;
+            chatDiv.innerText = message;
+            chatContainer.appendChild(chatDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;  // Scroll to the bottom
+        }
+
+        // Function to get bot's response from server
+        function getBotResponse(userMessage) {
+            $.ajax({
+                url: '/llm_response',
+                type: 'POST',
+                data: { 'message': userMessage },
+                success: function (response) {
+                    // Hide typing animation when response is received
+                    document.getElementById('typing-animation').style.display = 'none';
+                    addMessage("incoming", response);  // Add bot response to chat
+                },
+                error: function (error) {
+                    console.log(error);  // Log any errors
+                    // Hide typing animation in case of an error
+                    document.getElementById('typing-animation').style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+[settings]
+hf_key = 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
+bot_port = 1896
+bot_ip = 0.0.0.0
+qdrant_host = localhost
+openai_key = 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

@@ -1,0 +1,10 @@
+services:
+  web:
+    build: .
+    container_name: chatbot
+    ports:
+      - 1896:1896
+    expose:
+      - 1896
+    volumes:
+      - ./chatbot_data:/chatbot_data/

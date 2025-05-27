@@ -1,0 +1,89 @@
+User Guide: Setting Up the AI Chatbot
+
+Clone the GitHub Repository
+
+To use SSH for cloning, you first need to configure SSH with your GitHub account:
+
+Follow the instructions here: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account Adding a new SSH key to your GitHub account.
+
+Once configured, clone the repository using SSH:bash
+Copy code:
+git clone git@github.com:UNHM-TEAM-PROJECT/Fall2024-Team-Avengers.git
+
+ 
+
+Install Required Packages
+
+Navigate to the repository folder and install the dependencies:bash
+Copy code:
+pip install -r requirements.txt
+
+
+Set Up the Docker Environment
+
+Navigate to the qdrant folder:bash
+Copy code:
+cd qdrant
+
+Run the Docker Compose file to initialize the environment:bash
+Copy code:
+docker compose-up
+
+Ensure you have the latest version of Docker installed to avoid errors.
+
+ 
+
+Run the Qdrant Setup Script
+
+In the qdrant folder, execute the setup script:bash
+Copy code:
+python setup.py
+
+
+Load Documents
+
+Load the required documents for the chatbot by running the following commands:bash
+Copy code:
+python load_pdf.py 690_edited.pdf 690
+python load_pdf.py 893_edited.pdf 893
+python load_pdf.py chatbox.pdf default
+
+
+Configure API Keys
+
+Navigate back to the root folder:bash
+Copy code:
+cd ..
+
+
+Open the config.txt file and add your OpenAI API key:
+Copy code:
+OPENAI_API_KEY=<your-openai-api-key>
+
+
+For Docker users only: Update the qdrant_host setting in config.txt:
+Copy code:
+qdrant_host = docker.host.internal
+
+
+Run the Chatbot
+
+Option 1: Python Method
+
+Launch the chatbot using Python:bash
+Copy code:
+python chatbot_fat.py
+
+
+If running on Windows, you may need to install the pywin32 module:bash
+Copy code:
+pip install pywin32
+
+
+Option 2: Docker Method
+
+Launch the chatbot using Docker:
+
+Run the following command in the root folder:bash
+Copy code:
+docker-compose up
